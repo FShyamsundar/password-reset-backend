@@ -56,7 +56,8 @@ export const forgotPassword = async (req, res) => {
     user.resetTokenExpiry = Date.now() + 10 * 60 * 1000;
     await user.save();
 
-    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetLink = `${frontendURL}/reset-password/${resetToken}`;
     
     const emailHTML = `
       <!DOCTYPE html>
@@ -91,7 +92,8 @@ export const forgotPassword = async (req, res) => {
       message: 'Password reset link sent to your email'
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Failed to send reset email', error: error.message });
   }
 };
 
